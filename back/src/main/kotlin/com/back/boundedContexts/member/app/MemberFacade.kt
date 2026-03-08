@@ -3,6 +3,7 @@ package com.back.boundedContexts.member.app
 import com.back.boundedContexts.member.domain.shared.Member
 import com.back.boundedContexts.member.out.shared.MemberRepository
 import com.back.global.exception.app.AppException
+import com.back.global.rsData.RsData
 import com.back.standard.dto.member.type1.MemberSearchSortType1
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
@@ -17,7 +18,11 @@ class MemberFacade(
     fun count(): Long = memberRepository.count()
 
     @Transactional
-    fun join(username: String, password: String?, nickname: String): Member {
+    fun join(username: String, password: String?, nickname: String): Member =
+        join(username, password, nickname, null)
+
+    @Transactional
+    fun join(username: String, password: String?, nickname: String, profileImgUrl: String?): Member {
         memberRepository.findByUsername(username)?.let {
             throw AppException("409-1", "이미 존재하는 회원 아이디입니다.")
         }
@@ -28,7 +33,8 @@ class MemberFacade(
                 username,
                 password,
                 nickname,
-                UUID.randomUUID().toString()
+                UUID.randomUUID().toString(),
+                profileImgUrl = profileImgUrl
             )
         )
 
@@ -50,6 +56,23 @@ class MemberFacade(
             throw AppException("401-1", "비밀번호가 일치하지 않습니다.")
         }
     }
+
+    @Transactional
+    fun modify(member: Member, nickname: String, profileImgUrl: String?) {
+        member.modify(nickname, profileImgUrl)
+    }
+
+    @Transactional
+    fun modifyOrJoin(username: String, password: String?, nickname: String, profileImgUrl: String?): RsData<Member> =
+        findByUsername(username)
+            ?.let {
+                modify(it, nickname, profileImgUrl)
+                RsData("200-1", "회원 정보가 수정되었습니다.", it)
+            }
+            ?: run {
+                val joinedMember = join(username, password, nickname, profileImgUrl)
+                RsData("201-1", "회원가입이 완료되었습니다.", joinedMember)
+            }
 
     @Transactional(readOnly = true)
     fun findPagedByKw(

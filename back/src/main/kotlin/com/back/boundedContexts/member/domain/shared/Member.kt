@@ -46,6 +46,9 @@ class Member(
 
     @field:Column(unique = true, nullable = false)
     var apiKey: String,
+
+    @field:Column(columnDefinition = "TEXT")
+    var profileImgUrl: String? = null,
 ) : BaseTime(id) {
     val name: String
         get() = nickname
@@ -54,7 +57,14 @@ class Member(
         get() = username in setOf("system", "admin")
 
     val profileImgUrlOrDefault: String
-        get() = "https://placehold.co/600x600?text=U_U"
+        get() = profileImgUrl
+            ?.takeIf { it.isNotBlank() }
+            ?: "https://placehold.co/600x600?text=U_U"
+
+    fun modify(nickname: String, profileImgUrl: String?) {
+        this.nickname = nickname
+        profileImgUrl?.let { this.profileImgUrl = it }
+    }
 
     fun modifyApiKey(apiKey: String) {
         this.apiKey = apiKey
