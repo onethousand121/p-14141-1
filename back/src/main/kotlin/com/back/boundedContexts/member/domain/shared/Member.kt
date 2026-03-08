@@ -61,12 +61,16 @@ class Member(
         username,
         password,
         nickname,
-        UUID.randomUUID().toString(),
+        genApiKey(),
     )
 
     companion object {
         lateinit var attrRepository_: MemberAttrRepository
         val attrRepository by lazy { attrRepository_ }
+
+        val SYSTEM = Member(1, "system", "시스템")
+
+        fun genApiKey(): String = UUID.randomUUID().toString()
     }
 
     override val member: Member
