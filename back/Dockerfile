@@ -21,7 +21,8 @@ WORKDIR /app
 # 의존성 캐시 레이어 (소스 변경 시에도 캐시 유지)
 COPY gradlew .
 COPY gradle gradle
-COPY build.gradle.kts settings.gradle.kts .
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
 RUN chmod +x gradlew && ./gradlew dependencies --no-daemon
 
 COPY .env.test .env.test
