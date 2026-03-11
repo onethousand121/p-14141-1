@@ -111,7 +111,7 @@ custom:
     redisHost: localhost
     redisDatabase: 1
   prod:
-    cookieDomain: mall.jaeil.shop
+    cookieDomain: mall2.jaeil.shop
     frontUrl: "https://www.${custom.prod.cookieDomain}"
     backUrl: "https://api.${custom.prod.cookieDomain}"
     dbHost: pg_1
